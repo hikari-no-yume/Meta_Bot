@@ -1,0 +1,12 @@
+{
+    "username": "Bot_username_here",
+    "password": "bot password here",
+    "userAgent": "Example_Bot by /u/example",
+    "description": "This comment was posted by a bot, see /r/Example_Bot for more info.",
+    "subredditBlacklist": [
+        "example_subreddit_name"
+    ],
+    "usernameBlacklist": [
+        "example_user"
+    ]
+}
