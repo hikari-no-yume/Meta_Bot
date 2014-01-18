@@ -4,10 +4,16 @@ var config = require('./config.json'),
     request = require('request'),
     url = require('url'),
     fs = require('fs'),
-    _ = require('underscore'),
-    data = require('./data.json');
+    _ = require('underscore');
+    
 
-var thingRecords = data.thingRecords;
+var data, thingRecords;
+try {
+  data = require('./data.json');
+  thingRecords = data.thingRecords;
+} catch (e) {
+  thingRecords = {};
+}
 
 function saveData() {
   fs.writeFileSync('data.json', JSON.stringify({
