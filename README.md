@@ -1,7 +1,9 @@
 What it is
 ==========
 
-Meta_bot is a reddit bot that trawls the new queues of the reddit.com, www.reddit.com and np.reddit.com domains on reddit, to find links to submissions to comments. It then comments on those submissions and comments, informing them that they were linked elsewhere on the site.
+Meta Bot is a reddit bot that trawls the new queues of the reddit.com, www.reddit.com and np.reddit.com domains on reddit, to find links to submissions to comments. It then comments on those submissions and comments, informing them that they were linked elsewhere on the site.
+
+The live version is [/u/Meta_Bot2](https://www.reddit.com/user/Meta_Bot2).
 
 Setup
 =====
