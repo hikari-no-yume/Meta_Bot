@@ -1,7 +1,7 @@
 LICENSE
 =======
 
-Meta_Bot (except where otherwise noted) © 2013-2014 Andrea Faulds.
+Meta Bot (except where otherwise noted) © 2013-2015 Andrea Faulds.
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
