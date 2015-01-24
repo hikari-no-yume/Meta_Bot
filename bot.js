@@ -1,7 +1,7 @@
 'use strict';
 
 var config = require('./config.json'),
-    request = require('request'),
+    request = require('request').defaults({jar: true}),
     url = require('url'),
     fs = require('fs'),
     _ = require('underscore');
@@ -189,8 +189,12 @@ function processLink(queue, metaThingTitle, metaThingSubreddit, metaThingURL, me
         }
 
         numSubreddits = _.uniq(_.pluck(record.metaThings, 'subreddit')).length;
-        numSubreddits = (numSubreddits === 1) ? '1 subreddit' : (numSubreddits + ' subreddits');
-        comment = 'This ' + (thingID[1] === '1' ? 'comment' : 'submission') + ' has been linked to in ' + numSubreddits + ' (at the time of comment generation):\n\n';
+        if (numSubreddits === 1) {
+            comment = 'Someone submitted a link to this ' + (thingID[1] === '1' ? 'comment' : 'submission') + ' in the following subreddit:\n\n';
+        } else {
+            comment = 'Links to this ' + (thingID[1] === '1' ? 'comment' : 'submission') + ' have been submitted to ' + numSubreddits + ' subreddits:';
+        }
+            
         record.metaThings.forEach(function (metaThing) {
           comment += '* /r/' + metaThing.subreddit + ': [' + metaThing.title + '](' + metaThing.thingURL + ')\n';
         });
@@ -201,12 +205,12 @@ function processLink(queue, metaThingTitle, metaThingSubreddit, metaThingURL, me
             uri: 'http://www.reddit.com/api/editusertext?api_type=json',
             method: 'POST',
             headers: {
-              'User-Agent': config.userAgent
+              'User-Agent': config.userAgent,
+              'X-Modhash': page[0].data.modhash
             },
             form: {
               text: comment,
               thing_id: record.commentID,
-              uh: page[0].data.modhash
             }
           };
         } else {
@@ -214,19 +218,18 @@ function processLink(queue, metaThingTitle, metaThingSubreddit, metaThingURL, me
             uri: 'http://www.reddit.com/api/comment?api_type=json',
             method: 'POST',
             headers: {
-              'User-Agent': config.userAgent
+              'User-Agent': config.userAgent,
+              'X-Modhash': page[0].data.modhash
             },
             form: {
               text: comment,
               thing_id: thingID,
-              uh: page[0].data.modhash
             }
           };
         }
 
         waitRequest(function () {
           request(options, function (error, response, body) {
-            //console.log(response.statusCode + ';' + body);
             if (!error && response.statusCode === 200) {
               body = JSON.parse(body);
               if (!body.json.errors.length) {
@@ -241,8 +244,6 @@ function processLink(queue, metaThingTitle, metaThingSubreddit, metaThingURL, me
                 } else {
                   console.log('Updated comment on ' + thingID);
                 }
-                //console.dir(record);
-                //console.log('All good?');
                 thingRecords[thingID] = record;
                 saveData();
 
