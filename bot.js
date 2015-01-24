@@ -192,7 +192,7 @@ function processLink(queue, metaThingTitle, metaThingSubreddit, metaThingURL, me
         if (numSubreddits === 1) {
             comment = 'Someone submitted a link to this ' + (thingID[1] === '1' ? 'comment' : 'submission') + ' in the following subreddit:\n\n';
         } else {
-            comment = 'Links to this ' + (thingID[1] === '1' ? 'comment' : 'submission') + ' have been submitted to ' + numSubreddits + ' subreddits:';
+            comment = 'Links to this ' + (thingID[1] === '1' ? 'comment' : 'submission') + ' have been submitted to ' + numSubreddits + ' subreddits:\n\n';
         }
             
         record.metaThings.forEach(function (metaThing) {
