@@ -69,6 +69,47 @@ function nextLinkSource() {
   return linkSources[currentLinkSource];
 }
 
+var robots = {
+    "comments-only": {},
+    "posts-only": {},
+    "disallowed": {},
+    "permission": {}
+};
+
+function getRobots() {
+    waitRequest(function () {
+      request({
+        uri: 'http://www.reddit.com/r/Bottiquette/wiki/robots_txt_json.json',
+        method: 'GET',
+        headers: {
+          'User-Agent': config.userAgent
+        }
+      }, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          console.log('All good for get robots');
+          var data = JSON.parse(body);
+          data = JSON.parse(data.data.content_md);
+          for (var key in data) {
+             if (data.hasOwnProperty(key)) {
+                robots[key] = {};
+                data[key].forEach(function (subreddit) {
+                  robots[key][subreddit.toLowerCase()] = null;
+                });
+             }
+          }
+          console.dir(robots);
+          console.log('Loaded robots');
+        } else {
+          console.log('Things bad for robots, panic!');
+        }
+        console.log('Will re-fetch robots in ~1hr');
+        waitRequest(getRobots, 60 * 60 * 1000);
+      });
+    });
+}
+
+getRobots();
+
 waitRequest(function () {
   request({
     uri: 'http://www.reddit.com/api/login',
@@ -140,6 +181,14 @@ function getDataForURL(input) {
 
 function processLink(queue, metaThingTitle, metaThingSubreddit, metaThingURL, metaThingID, thingURL, thingID) {
   return (function () {        
+    var thingSubreddit = thingURL.split('/')[2].toLowerCase();
+    if (robots['posts-only'].hasOwnProperty(thingSubreddit)
+      || robots['permission'].hasOwnProperty(thingSubreddit)
+      || robots['disallowed'].hasOwnProperty(thingSubreddit)
+    ) {
+      console.log('Skipping ' + thingID + ', robots disallows posts to /r/' + thingSubreddit);
+      return;
+    }
     request({
       uri: 'http://www.reddit.com' + thingURL + '.json',
       method: 'GET',
