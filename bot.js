@@ -197,9 +197,7 @@ function processLink(queue, metaThingTitle, metaThingSubreddit, metaThingURL, me
             
         record.metaThings.forEach(function (metaThing) {
           // create np.reddit.com version
-          var url = metaThing.thingURL;
-          url = url.substr(url.indexOf('reddit.com/'));
-          url = 'https://np.' + url;
+          var url = 'https://np.reddit.com' + metaThing.thingURL;
           comment += '* /r/' + metaThing.subreddit + ': [' + metaThing.title + '](' + url + ')\n';
         });
         comment += '\n----\n' + config.description;
