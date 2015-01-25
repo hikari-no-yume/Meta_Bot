@@ -110,27 +110,30 @@ function getRobots() {
 
 getRobots();
 
-waitRequest(function () {
-    request({
-        uri: 'http://www.reddit.com/api/login',
-        method: 'POST',
-        headers: {
-            'User-Agent': config.userAgent
-        },
-        form: {
-            user: config.username,
-            passwd: config.password,
-            rem: 'False'
-        }
-    }, function (error, response) {
-        if (!error && response.statusCode == 200) {
-            console.log('All good for login');
-            waitRequest(moreLinks);
-        } else {
-            console.log('Things bad for login');
-        }
+function doLogin() {
+    waitRequest(function () {
+        request({
+            uri: 'http://www.reddit.com/api/login',
+            method: 'POST',
+            headers: {
+                'User-Agent': config.userAgent
+            },
+            form: {
+                user: config.username,
+                passwd: config.password,
+                rem: 'False'
+            }
+        }, function (error, response) {
+            if (!error && response.statusCode == 200) {
+                console.log('All good for login');
+                waitRequest(moreLinks);
+            } else {
+                console.log('Things bad for login');
+            }
+        });
     });
-});
+}
+doLogin();
 
 function moreLinks() {
     request({
@@ -319,6 +322,10 @@ function processLink(queue, metaThingTitle, metaThingSubreddit, metaThingURL, me
                                     queueNext();
                                 } else if (body.json.errors[0][0] === "NOT_AUTHOR") {
                                     console.log('Not author of ' + thingID + ' comment ' + record.commentID + '??');
+                                    return;
+                                } else if (body.json.errors[0][0] === 'USER_REQUIRED') {
+                                    console.log('Got USER_REQUIRED, need to log in again.');
+                                    doLogin();
                                     return;
                                 } else {
                                     console.log('Error posting/editing comment: ' + body.json.errors);
