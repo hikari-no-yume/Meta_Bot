@@ -187,6 +187,7 @@ function processLink(queue, metaThingTitle, metaThingSubreddit, metaThingURL, me
       || robots['disallowed'].hasOwnProperty(thingSubreddit)
     ) {
       console.log('Skipping ' + thingID + ', robots disallows posts to /r/' + thingSubreddit);
+      queueNext();
       return;
     }
     request({
