@@ -183,6 +183,9 @@ function getDataForURL(input) {
 }
 
 function totesReplied(page, thingID) {
+    if (typeof page !== "object") {
+        return false;
+    }
     if (page instanceof Array) {
         for (var i = 0; i < page.length; i++) {
             if (totesReplied(page[i], thingID)) {
