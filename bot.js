@@ -167,7 +167,7 @@ function getDataForURL(input) {
     parsed = url.parse(input);
     matched = parsed.pathname.match(/^\/r\/[a-zA-Z0-9]+\/comments\/([a-z0-9]+)\/?([a-z0-9_]+)?\/?([a-z0-9]+)?\/?$/);
 
-    if (matched && matched[2]) {
+    if (matched && matched[3]) {
         return {
             thingID: 't1_' + matched[3],
             thingURL: parsed.pathname
