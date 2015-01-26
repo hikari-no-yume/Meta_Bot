@@ -183,24 +183,18 @@ function getDataForURL(input) {
 }
 
 function totesReplied(page, thingID) {
-    console.log('Spidering to see if totes replied to ' + thingID);
-    if (typeof page !== 'object') {
-        return;
-    }
     if (page instanceof Array) {
         for (var i = 0; i < page.length; i++) {
-            console.log('Array: ' + i);
             if (totesReplied(page[i], thingID)) {
                 return true;
             }
         }
     } else {
         if (page.kind === 'Listing') {
-            console.log('Listing');
             return totesReplied(page.data.children, thingID);
         } else if (page.kind === thingID.substr(0, 2)) {
-            console.log('reply to ' + page.data.parent_id + ' by ' + page.data.author);
             if (page.data.parent_id === thingID && page.data.author === 'totes_meta_bot') {
+                console.log('Found you, totes!');
                 return true;
             }
             return totesReplied(page.data.replies, thingID);
@@ -234,15 +228,6 @@ function processLink(queue, metaThingTitle, metaThingSubreddit, metaThingURL, me
 
                 page = JSON.parse(body);
 
-                /* spider page to see if totes_meta_bot replied */
-                if (totesReplied(page, thingID)) {
-                    console.log('Totes already commented on ' + thingID + ', marking BAD and moving on');
-                    badThings.push(thingID);
-                    saveData();
-                    queueNext();
-                    return;
-                }
-
                 if (thingRecords.hasOwnProperty(thingID)) {
                     if (!thingRecords[thingID].hasOwnProperty('commentID')) {
                         console.log('ERROR! ' + thingID + ' lacks commentID! - ' + thingURL);
@@ -262,6 +247,18 @@ function processLink(queue, metaThingTitle, metaThingSubreddit, metaThingURL, me
                     });
                     edit = true;
                 } else {
+                    /* spider page to see if totes_meta_bot replied */
+                    console.log('Checking to make sure totes_meta_bot did not already comment');
+                    if (totesReplied(page, thingID)) {
+                        console.log('Totes already commented on ' + thingID + ', marking BAD and moving on');
+                        badThings.push(thingID);
+                        saveData();
+                        queueNext();
+                        return;
+                    } else {
+                        console.log('They did not.');
+                    }
+
                     record = {
                         thingID: thingID,
                         thingURL: thingURL,
